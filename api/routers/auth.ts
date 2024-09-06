@@ -5,25 +5,29 @@ import { cookies } from "next/headers";
 import { generateIdFromEntropySize } from "lucia";
 
 import { publicProcedure } from "../procedures/public";
-import { LoginInputSchema, SignupInputSchema } from "../shared/schemas/auth";
+import {
+  LoginInputSchema,
+  RefreshSessionInputSchema,
+  SignupInputSchema,
+  ValidateSessionInputSchema,
+} from "../shared/schemas/auth";
 
 import { router } from "@/trpc/init";
 import { db } from "@/drizzle/db";
 import { users } from "@/drizzle/schema";
 import { auth } from "@/lucia/auth";
 import { protectedProcedure } from "../procedures/protected";
-import { z } from "zod";
 
 export const authRouter = router({
   validateSession: publicProcedure
-    .input(z.object({ sessionId: z.string() }))
+    .input(ValidateSessionInputSchema)
     .query(async ({ input }) => {
       const result = await auth.validateSession(input.sessionId);
       return result;
     }),
 
   refreshSession: publicProcedure
-    .input(z.object({ sessionId: z.string() }))
+    .input(RefreshSessionInputSchema)
     .mutation(async ({ input }) => {
       const result = auth.createSessionCookie(input.sessionId);
       return result;

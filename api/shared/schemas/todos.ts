@@ -22,3 +22,17 @@ export const GetTodosInputSchema = z.object({
     .default("all"),
   title: z.string().optional(),
 });
+
+export const GetTodoInputSchema = z.object({
+  id: z.string(),
+});
+
+export const UpdateTodoInputSchema = z.object({
+  id: z.string(),
+  title: z.string().optional(),
+  completed: z.boolean().optional(),
+});
+
+export const DeleteTodoInputSchema = z.object({
+  id: z.string(),
+});

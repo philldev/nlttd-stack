@@ -2,10 +2,16 @@ import { router } from "@/trpc/init";
 import { protectedProcedure } from "../procedures/protected";
 import { db } from "@/drizzle/db";
 import { todos } from "@/drizzle/schema";
-import { and, asc, desc, eq, gt, gte, like, lte } from "drizzle-orm";
+import { and, desc, eq, gte, like, lte } from "drizzle-orm";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { CreateTodoInput, GetTodosInputSchema } from "../shared/schemas/todos";
+import {
+  CreateTodoInput,
+  DeleteTodoInputSchema,
+  GetTodoInputSchema,
+  GetTodosInputSchema,
+  UpdateTodoInputSchema,
+} from "../shared/schemas/todos";
 import {
   endOfMonth,
   endOfWeek,
@@ -113,7 +119,7 @@ export const todosRouter = router({
    * @description Get a single todo for the current user
    */
   getTodo: protectedProcedure
-    .input(z.object({ id: z.string() }))
+    .input(GetTodoInputSchema)
     .query(async ({ ctx, input }) => {
       const userId = ctx.user.id;
       const { id } = input;
@@ -154,13 +160,7 @@ export const todosRouter = router({
    * @description Update a todo for the current user
    */
   updateTodo: protectedProcedure
-    .input(
-      z.object({
-        id: z.string(),
-        title: z.string().optional(),
-        completed: z.boolean().optional(),
-      }),
-    )
+    .input(UpdateTodoInputSchema)
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.user.id;
       const { id, title, completed } = input;
@@ -188,7 +188,7 @@ export const todosRouter = router({
    * @description Delete a todo for the current user
    */
   deleteTodo: protectedProcedure
-    .input(z.object({ id: z.string() }))
+    .input(DeleteTodoInputSchema)
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.user.id;
       const { id } = input;

@@ -12,3 +12,11 @@ export const SignupInputSchema = z.object({
     .max(20, "Username must be less than 20 characters"),
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
+
+export const RefreshSessionInputSchema = z.object({
+  sessionId: z.string(),
+});
+
+export const ValidateSessionInputSchema = z.object({
+  sessionId: z.string(),
+});
