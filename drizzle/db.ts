@@ -4,7 +4,7 @@ import { users, sessions } from "./schema";
 
 // Setup sqlite database connection
 const client = createClient({
-  url: process.env.DATABASE_URL ?? "file:sqlite.db",
+  url: "file:sqlite.db",
   authToken: process.env.DATABASE_AUTH_TOKEN,
 });
 

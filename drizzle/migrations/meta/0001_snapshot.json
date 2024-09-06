@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "37142da5-87d7-45bc-a13e-3517805ae72c",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "4cc5c1d4-6ed3-4f3f-8e67-b920eb7bdfab",
+  "prevId": "37142da5-87d7-45bc-a13e-3517805ae72c",
   "tables": {
     "session": {
       "name": "session",
@@ -101,7 +101,15 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "created_at_index": {
+          "name": "created_at_index",
+          "columns": [
+            "created_at"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "todo_user_id_user_id_fk": {
           "name": "todo_user_id_user_id_fk",

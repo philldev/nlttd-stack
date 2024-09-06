@@ -1,47 +1,27 @@
 import { initTRPC } from "@trpc/server";
-import { cookies } from "next/headers";
-import { cache } from "react";
-import { auth } from "../lucia/auth";
 import superjson from "superjson";
+import { ZodError } from "zod";
 
-export const createTRPCContext = cache(async () => {
-  const sessionId = cookies().get(auth.sessionCookieName)?.value ?? null;
+import { Context } from "@/api/context";
 
-  if (!sessionId) {
-    return {
-      session: null,
-      user: null,
-    };
-  }
-
-  const result = await auth.validateSession(sessionId);
-
-  try {
-    if (result.session && result.session.fresh) {
-      const sessionCookie = auth.createSessionCookie(result.session.id);
-      cookies().set(
-        sessionCookie.name,
-        sessionCookie.value,
-        sessionCookie.attributes,
-      );
-    }
-    if (!result.session) {
-      const sessionCookie = auth.createBlankSessionCookie();
-      cookies().set(
-        sessionCookie.name,
-        sessionCookie.value,
-        sessionCookie.attributes,
-      );
-    }
-  } catch {}
-  return result;
-});
-
-const t = initTRPC.context<typeof createTRPCContext>().create({
+const t = initTRPC.context<Context>().create({
   /**
    * @see https://trpc.io/docs/server/data-transformers
    */
   transformer: superjson,
+  errorFormatter(opts) {
+    const { shape, error } = opts;
+    return {
+      ...shape,
+      data: {
+        ...shape.data,
+        zodError:
+          error.code === "BAD_REQUEST" && error.cause instanceof ZodError
+            ? error.cause.flatten()
+            : null,
+      },
+    };
+  },
 });
 
 // Base router and procedure helpers
